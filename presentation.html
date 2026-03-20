@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Room 4 — [Hackathon Name]</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+    }
+
+    .slide {
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .header {
+      border-left: 4px solid #e8912d;
+      padding-left: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1.1;
+    }
+
+    .header .team {
+      margin-top: 0.4rem;
+      color: #888;
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card.accent { border-color: #e8912d44; }
+    .card.wide { grid-column: 1 / -1; }
+
+    .card h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #e8912d;
+      margin-bottom: 0.6rem;
+    }
+
+    .card p, .card li {
+      font-size: 0.95rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .card ul { padding-left: 1.1rem; }
+    .card li { margin-bottom: 0.3rem; }
+
+    .tag {
+      display: inline-block;
+      background: #1e1e2e;
+      border: 1px solid #a78bfa55;
+      color: #a78bfa;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      margin: 0.2rem 0.2rem 0 0;
+    }
+
+    .outcome {
+      font-size: 1.05rem;
+      color: #e8912d;
+      font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #444;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+
+    <div class="header">
+      <h1>Room 4 — [Your Hackathon Name]</h1>
+      <div class="team">Francesco Sbaraglia · Maximo Julio Colombres Meyer · Raman Sachdev · Esther Tan · Patcharee Rityim &nbsp;|&nbsp; APAC Claude Code Workshop</div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card accent">
+        <h2>Problem</h2>
+        <p>[One or two sentences describing the pain point you tackled in the inventory management system.]</p>
+      </div>
+
+      <div class="card accent">
+        <h2>Solution</h2>
+        <p>[One or two sentences describing what you built and how it solves the problem.]</p>
+      </div>
+
+      <div class="card">
+        <h2>How Claude Code Helped</h2>
+        <ul>
+          <li>[Specific Claude Code feature or command you used]</li>
+          <li>[Another feature — hooks, subagents, skills, evals?]</li>
+          <li>[Most inventive use of the tool]</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Architecture Decisions</h2>
+        <ul>
+          <li>[Key decision and why you made it]</li>
+          <li>[Trade-off you considered]</li>
+          <li>[What you'd change with more time]</li>
+        </ul>
+      </div>
+
+      <div class="card wide">
+        <h2>Outcome &amp; What's Next</h2>
+        <p class="outcome">[One sentence: the headline result.]</p>
+        <br />
+        <p>[What you'd ship next if you had another hour.]</p>
+        <br />
+        <span class="tag">production-ready</span>
+        <span class="tag">tested</span>
+        <span class="tag">Claude Code</span>
+        <!-- Add or remove tags that fit your submission -->
+      </div>
+
+    </div>
+
+    <div class="footer">Built with Claude Code · Room 4 · APAC Workshop 2025</div>
+  </div>
+</body>
+</html>
