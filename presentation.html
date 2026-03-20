@@ -1,158 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Room 4 — [Hackathon Name]</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Dashboard Nobody Trusts — Room 4</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0F1117;--surface:#1A1D27;--card:#22252F;--border:#2E3140;
+--text:#E8E6E1;--muted:#9B99A1;--accent:#7C6EF6;--accent2:#5DCAA5;
+--coral:#F0997B;--amber:#EF9F27;--blue:#85B7EB;--pink:#ED93B1;
+--red:#F09595;--green:#97C459;
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+.deck{position:relative;width:100%;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:48px 64px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;transform:translateX(40px)}
+.slide.active{opacity:1;pointer-events:auto;transform:translateX(0)}
+.slide.prev{transform:translateX(-40px)}
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0f0f0f;
-      color: #f0f0f0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 2rem;
-    }
+/* Nav */
+nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:90;align-items:center}
+nav .dot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s}
+nav .dot.on{background:var(--accent);width:28px;border-radius:5px}
+.nav-btn{position:fixed;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);color:var(--muted);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:90;transition:all .2s}
+.nav-btn:hover{background:var(--card);color:var(--text)}
+#prev-btn{left:18px}
+#next-btn{right:18px}
+.slide-num{position:fixed;top:24px;right:32px;font-size:13px;color:var(--muted);z-index:90;font-variant-numeric:tabular-nums}
+.team-tag{position:fixed;top:24px;left:32px;font-size:12px;color:var(--muted);z-index:90;letter-spacing:1.5px;text-transform:uppercase}
 
-    .slide {
-      max-width: 960px;
-      width: 100%;
-    }
+/* Typography */
+h1{font-size:42px;font-weight:700;line-height:1.15;margin-bottom:10px;letter-spacing:-.5px}
+h2{font-size:28px;font-weight:600;line-height:1.3;margin-bottom:6px}
+h3{font-size:18px;font-weight:600;margin-bottom:8px}
+.subtitle{font-size:18px;color:var(--muted);margin-bottom:36px;line-height:1.5}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px}
 
-    .header {
-      border-left: 4px solid #e8912d;
-      padding-left: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
+/* Cards grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:8px}
+.card h3{font-size:15px}
+.card p,.card li{font-size:13.5px;color:var(--muted);line-height:1.55}
+.card ul{list-style:none;padding:0}
+.card li{padding:4px 0;padding-left:18px;position:relative}
+.card li::before{content:'';position:absolute;left:0;top:11px;width:8px;height:8px;border-radius:50%}
 
-    .header h1 {
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: #f0f0f0;
-      line-height: 1.1;
-    }
+/* Accent colors for cards */
+.card.purple{border-left:3px solid var(--accent)}
+.card.teal{border-left:3px solid var(--accent2)}
+.card.coral{border-left:3px solid var(--coral)}
+.card.amber{border-left:3px solid var(--amber)}
+.card.blue{border-left:3px solid var(--blue)}
+.card.pink{border-left:3px solid var(--pink)}
+.card.purple li::before{background:var(--accent)}
+.card.teal li::before{background:var(--accent2)}
+.card.coral li::before{background:var(--coral)}
+.card.amber li::before{background:var(--amber)}
+.card.blue li::before{background:var(--blue)}
+.card.pink li::before{background:var(--pink)}
 
-    .header .team {
-      margin-top: 0.4rem;
-      color: #888;
-      font-size: 0.95rem;
-    }
+/* Metric cards */
+.metric{text-align:center;padding:20px 16px}
+.metric .val{font-size:36px;font-weight:700;line-height:1.1}
+.metric .label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.25rem;
-    }
+/* Architecture diagram */
+.arch{display:flex;flex-direction:column;align-items:center;gap:0;flex:1;justify-content:center}
+.arch-row{display:flex;align-items:center;gap:16px}
+.arch-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 22px;text-align:center;min-width:120px}
+.arch-box.highlight{border-color:var(--accent);box-shadow:0 0 20px rgba(124,110,246,.15)}
+.arch-box .lbl{font-size:14px;font-weight:600}
+.arch-box .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.arch-arrow{color:var(--muted);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0}
+.arch-arrow span{font-size:10px;color:var(--muted);letter-spacing:.5px}
+.tools-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.tool-pill{background:rgba(124,110,246,.12);color:var(--accent);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid rgba(124,110,246,.2)}
 
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 1.25rem 1.5rem;
-    }
+/* Dashboard mockup */
+.dash{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:14px;flex:1;min-height:0}
+.dash-header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px}
+.dash-header .filters{display:flex;gap:8px}
+.filter-chip{background:var(--surface);border:1px solid var(--border);padding:5px 14px;border-radius:6px;font-size:12px;color:var(--muted)}
+.filter-chip.sel{border-color:var(--accent);color:var(--accent);background:rgba(124,110,246,.08)}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;display:flex;flex-direction:column}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:12px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;flex:1;padding-top:8px;min-height:160px}
+.bar-group{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar{border-radius:4px 4px 0 0;width:100%;min-height:4px;transition:height .5s}
+.bar-label{font-size:10px;color:var(--muted);writing-mode:horizontal-tb;text-align:center}
+.table-mock{font-size:12px;width:100%;border-collapse:separate;border-spacing:0}
+.table-mock thead th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.table-mock tbody td{padding:7px 10px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+.table-mock tbody tr:last-child td{border:none}
+.spread-bar{height:6px;border-radius:3px;background:var(--border);position:relative;min-width:60px}
+.spread-fill{height:100%;border-radius:3px;position:absolute;left:0;top:0}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
 
-    .card.accent { border-color: #e8912d44; }
-    .card.wide { grid-column: 1 / -1; }
+/* Testing section */
+.test-approach{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;flex:1;min-height:0}
+.test-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.test-card .icon-ring{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.test-item{font-size:12.5px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:6px;line-height:1.4;border-left:2px solid transparent}
+.test-item.pass{border-left-color:var(--green)}
+.test-item.warn{border-left-color:var(--amber)}
+.test-item.edge{border-left-color:var(--coral)}
+.code-tag{font-family:'SF Mono',Consolas,monospace;font-size:11px;background:rgba(124,110,246,.1);color:var(--accent);padding:1px 6px;border-radius:3px}
 
-    .card h2 {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #e8912d;
-      margin-bottom: 0.6rem;
-    }
+/* Stakeholder quote cards */
+.quote-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative}
+.quote-card::before{content:'"';position:absolute;top:8px;left:14px;font-size:36px;color:var(--border);font-family:Georgia,serif}
+.quote-text{font-size:14px;font-style:italic;color:var(--text);padding-left:24px;line-height:1.5}
+.quote-role{font-size:12px;color:var(--muted);margin-top:10px;padding-left:24px}
 
-    .card p, .card li {
-      font-size: 0.95rem;
-      color: #ccc;
-      line-height: 1.6;
-    }
-
-    .card ul { padding-left: 1.1rem; }
-    .card li { margin-bottom: 0.3rem; }
-
-    .tag {
-      display: inline-block;
-      background: #1e1e2e;
-      border: 1px solid #a78bfa55;
-      color: #a78bfa;
-      border-radius: 4px;
-      padding: 2px 10px;
-      font-size: 0.78rem;
-      margin: 0.2rem 0.2rem 0 0;
-    }
-
-    .outcome {
-      font-size: 1.05rem;
-      color: #e8912d;
-      font-weight: 600;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      color: #444;
-      font-size: 0.8rem;
-    }
-  </style>
+/* Highlight callout */
+.callout{background:rgba(124,110,246,.06);border:1px solid rgba(124,110,246,.15);border-radius:10px;padding:16px 20px;margin-top:12px;display:flex;align-items:flex-start;gap:12px}
+.callout .icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.callout p{font-size:13px;color:var(--muted);line-height:1.5}
+.callout strong{color:var(--text)}
+</style>
 </head>
 <body>
-  <div class="slide">
+<div class="team-tag">Room 4</div>
+<div class="slide-num" id="snum">1 / 4</div>
+<button class="nav-btn" id="prev-btn" onclick="go(-1)">&#8249;</button>
+<button class="nav-btn" id="next-btn" onclick="go(1)">&#8250;</button>
+<nav id="dots"></nav>
 
-    <div class="header">
-      <h1>Room 4 — [Your Hackathon Name]</h1>
-      <div class="team">Francesco Sbaraglia · Maximo Julio Colombres Meyer · Raman Sachdev · Esther Tan · Patcharee Rityim &nbsp;|&nbsp; APAC Claude Code Workshop</div>
+<div class="deck" id="deck">
+
+<!-- ─── SLIDE 0: CONSOLIDATION + STAKEHOLDER AGREEMENT ─── -->
+<div class="slide active" data-i="0">
+  <div class="tag" style="background:rgba(124,110,246,.12);color:var(--accent)">The problem &amp; the path</div>
+  <h1>One metric. Four numbers.<br>Zero trust.</h1>
+  <p class="subtitle">We interviewed every stakeholder, found where they diverge — and why each was <em>partially right</em>.</p>
+
+  <div class="grid2" style="gap:24px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h3 style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:0">Before: the mess</h3>
+      <div class="grid4" style="gap:10px">
+        <div class="metric card" style="padding:16px"><div class="val" style="color:var(--coral)">40</div><div class="label">Dashboards</div></div>
+        <div class="metric card" style="padding:16px"><div class="val" style="color:var(--coral)">3</div><div class="label">BI tools</div></div>
+        <div class="metric card" style="padding:16px"><div class="val" style="color:var(--coral)">4</div><div class="label">CLV formulas</div></div>
+        <div class="metric card" style="padding:16px"><div class="val" style="color:var(--coral)">0%</div><div class="label">Exec trust</div></div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-text">The same customer is worth $45K or $15K depending on who you ask.</div>
+        <div class="quote-role">— VP of Sales, frustrated</div>
+      </div>
     </div>
 
-    <div class="grid">
-
-      <div class="card accent">
-        <h2>Problem</h2>
-        <p>[One or two sentences describing the pain point you tackled in the inventory management system.]</p>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h3 style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:0">How we got agreement</h3>
+      <div class="card teal">
+        <h3>1. Made the disagreement visible</h3>
+        <p>Ran all 4 formulas on real data. Showed the same customer with 4 different values. Nobody could ignore it.</p>
       </div>
-
-      <div class="card accent">
-        <h2>Solution</h2>
-        <p>[One or two sentences describing what you built and how it solves the problem.]</p>
+      <div class="card purple">
+        <h3>2. Named each method honestly</h3>
+        <p>Revenue CLV, Gross Margin, Net Margin, Predictive — each has a valid use case. No one was "wrong."</p>
       </div>
-
-      <div class="card">
-        <h2>How Claude Code Helped</h2>
-        <ul>
-          <li>[Specific Claude Code feature or command you used]</li>
-          <li>[Another feature — hooks, subagents, skills, evals?]</li>
-          <li>[Most inventive use of the tool]</li>
-        </ul>
+      <div class="card amber">
+        <h3>3. Picked a canonical default</h3>
+        <p>Gross margin as the exec default: reflects real product economics without over-allocating shared costs. Others are one toggle away.</p>
       </div>
-
-      <div class="card">
-        <h2>Architecture Decisions</h2>
-        <ul>
-          <li>[Key decision and why you made it]</li>
-          <li>[Trade-off you considered]</li>
-          <li>[What you'd change with more time]</li>
-        </ul>
-      </div>
-
-      <div class="card wide">
-        <h2>Outcome &amp; What's Next</h2>
-        <p class="outcome">[One sentence: the headline result.]</p>
-        <br />
-        <p>[What you'd ship next if you had another hour.]</p>
-        <br />
-        <span class="tag">production-ready</span>
-        <span class="tag">tested</span>
-        <span class="tag">Claude Code</span>
-        <!-- Add or remove tags that fit your submission -->
-      </div>
-
     </div>
-
-    <div class="footer">Built with Claude Code · Room 4 · APAC Workshop 2025</div>
   </div>
+
+  <div class="callout" style="margin-top:18px">
+    <div class="icon">&#9670;</div>
+    <p><strong>The reconciliation table is the artifact that won the room.</strong> When stakeholders see <em>why</em> their numbers differ — not just <em>that</em> they differ — alignment follows.</p>
+  </div>
+</div>
+
+<!-- ─── SLIDE 1: ARCHITECTURE ─── -->
+<div class="slide" data-i="1">
+  <div class="tag" style="background:rgba(93,202,165,.12);color:var(--accent2)">Architecture</div>
+  <h1>MCP as the semantic layer</h1>
+  <p class="subtitle">One server, five tools, zero ambiguity. Claude Code talks directly to our CLV engine.</p>
+
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box"><div class="lbl">Claude Code</div><div class="sub">or any MCP client</div></div>
+      <div style="width:80px"></div>
+      <div class="arch-box"><div class="lbl">Streamlit UI</div><div class="sub">Dashboard</div></div>
+    </div>
+    <div class="arch-arrow">&#9660;<span>MCP (stdio)</span></div>
+    <div class="arch-box highlight" style="min-width:420px">
+      <div class="lbl">MCP Server — CLV Analytics</div>
+      <div class="sub" style="margin-bottom:8px">Python &middot; FastMCP &middot; psycopg2</div>
+      <div class="tools-row">
+        <span class="tool-pill">get_clv()</span>
+        <span class="tool-pill">reconcile()</span>
+        <span class="tool-pill">query_data()</span>
+        <span class="tool-pill">list_customers()</span>
+        <span class="tool-pill">what_if()</span>
+      </div>
+    </div>
+    <div class="arch-arrow">&#9660;<span>psycopg2</span></div>
+    <div class="arch-box" style="min-width:320px">
+      <div class="lbl">PostgreSQL — AdventureWorks</div>
+      <div class="sub">68 tables &middot; 5 schemas &middot; 31K orders &middot; 20K customers</div>
+    </div>
+  </div>
+
+  <div class="grid3" style="margin-top:20px">
+    <div class="card purple" style="padding:16px">
+      <h3>Why MCP?</h3>
+      <p>Claude Code speaks it natively. No HTTP glue, no REST wrappers. Stdio transport — instant.</p>
+    </div>
+    <div class="card teal" style="padding:16px">
+      <h3>Semantic layer as code</h3>
+      <p>CLV definitions live in Python functions, not buried in BI SQL. Testable, versioned, one source of truth.</p>
+    </div>
+    <div class="card amber" style="padding:16px">
+      <h3>What's next: A2A</h3>
+      <p>Separate data, analytics, and presentation agents. Agent cards for cross-team capability discovery.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 2: DASHBOARD MOCKUP ─── -->
+<div class="slide" data-i="2">
+  <div class="tag" style="background:rgba(240,153,123,.12);color:var(--coral)">Production dashboard</div>
+  <h2 style="margin-bottom:4px">Customer lifetime value — executive view</h2>
+  <p class="subtitle" style="margin-bottom:18px;font-size:14px">The one dashboard that replaces the 40. Toggle methods, drill into divergence.</p>
+
+  <div class="dash">
+    <div class="dash-header">
+      <div style="display:flex;align-items:center;gap:16px">
+        <span style="font-size:14px;font-weight:600">CLV method:</span>
+        <div class="filters">
+          <span class="filter-chip" onclick="setMethod(0,this)" id="f0">Revenue</span>
+          <span class="filter-chip sel" onclick="setMethod(1,this)" id="f1">Gross margin</span>
+          <span class="filter-chip" onclick="setMethod(2,this)" id="f2">Net margin</span>
+          <span class="filter-chip" onclick="setMethod(3,this)" id="f3">Predictive</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:18px">
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--accent2)">$3.2M</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Total CLV</div></div>
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--blue)">19,120</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Customers</div></div>
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--amber)">$167</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Avg CLV</div></div>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="chart-card">
+      <div class="chart-title">Top 8 customers by selected CLV</div>
+      <div class="bar-chart" id="bars"></div>
+    </div>
+
+    <!-- Reconciliation table -->
+    <div class="chart-card" style="overflow:auto">
+      <div class="chart-title">CLV reconciliation — highest divergence</div>
+      <table class="table-mock">
+        <thead><tr><th>Customer</th><th>Revenue</th><th>Gross</th><th>Net</th><th>Predict.</th><th>Spread</th><th>Driver</th></tr></thead>
+        <tbody>
+          <tr><td>C-29825</td><td>$45,200</td><td>$18,400</td><td style="color:var(--coral)">$12,100</td><td>$32,000</td><td><div class="spread-bar"><div class="spread-fill" style="width:95%;background:var(--coral)"></div></div></td><td><span class="badge" style="background:rgba(240,153,123,.15);color:var(--coral)">High freight</span></td></tr>
+          <tr><td>C-11000</td><td>$12,800</td><td>$11,200</td><td>$8,900</td><td style="color:var(--accent)">$28,500</td><td><div class="spread-bar"><div class="spread-fill" style="width:72%;background:var(--accent)"></div></div></td><td><span class="badge" style="background:rgba(124,110,246,.12);color:var(--accent)">Repeat buyer</span></td></tr>
+          <tr><td>C-29672</td><td>$38,700</td><td style="color:var(--amber)">$8,200</td><td>$6,100</td><td>$14,300</td><td><div class="spread-bar"><div class="spread-fill" style="width:88%;background:var(--amber)"></div></div></td><td><span class="badge" style="background:rgba(239,159,39,.12);color:var(--amber)">High-cost SKUs</span></td></tr>
+          <tr><td>C-29734</td><td>$22,100</td><td>$17,600</td><td>$15,200</td><td>$19,800</td><td><div class="spread-bar"><div class="spread-fill" style="width:25%;background:var(--accent2)"></div></div></td><td><span class="badge" style="background:rgba(93,202,165,.12);color:var(--accent2)">Aligned</span></td></tr>
+          <tr><td>C-14328</td><td>$9,400</td><td>$7,800</td><td style="color:var(--red)">$-1,200</td><td>$5,600</td><td><div class="spread-bar"><div class="spread-fill" style="width:60%;background:var(--red)"></div></div></td><td><span class="badge" style="background:rgba(240,149,149,.12);color:var(--red)">Negative net</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 3: TESTING APPROACH ─── -->
+<div class="slide" data-i="3">
+  <div class="tag" style="background:rgba(133,183,235,.12);color:var(--blue)">Quality &amp; trust</div>
+  <h1>Testing approach</h1>
+  <p class="subtitle">Edge thinking, evaluation, and reversal thinking — because the whole point is trusting the numbers.</p>
+
+  <div class="test-approach">
+    <!-- Edge Thinking -->
+    <div class="test-card">
+      <div class="icon-ring" style="background:rgba(240,153,123,.12);color:var(--coral)">&#9888;</div>
+      <h3>Edge thinking</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">What breaks at the boundaries?</p>
+      <div class="test-item edge"><strong>Zero orders</strong> — customers with no purchases return CLV=0, not an error</div>
+      <div class="test-item edge"><strong>NULL StandardCost</strong> — 12 products lack cost data. Flagged, not silently dropped</div>
+      <div class="test-item edge"><strong>Single-order lifespan</strong> — floors to 1 year. No division by zero in predictive</div>
+      <div class="test-item edge"><strong>Negative net CLV</strong> — valid! Freight &gt; margin happens. Don't filter it out</div>
+      <div class="test-item edge"><strong>SQL injection via</strong> <span class="code-tag">query_data()</span> — only SELECT/WITH allowed</div>
+    </div>
+
+    <!-- Evaluation -->
+    <div class="test-card">
+      <div class="icon-ring" style="background:rgba(124,110,246,.12);color:var(--accent)">&#9745;</div>
+      <h3>Evaluation</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">Do the numbers make mathematical sense?</p>
+      <div class="test-item pass"><strong>Revenue ≥ Gross margin</strong> — always true. Cost can't be negative</div>
+      <div class="test-item pass"><strong>Gross ≥ Net</strong> — freight + tax only subtracts, never adds</div>
+      <div class="test-item pass"><strong>Reconcile covers 100%</strong> — every customer in revenue appears in reconciliation</div>
+      <div class="test-item pass"><strong>What-if monotonic</strong> — lower freight always increases net CLV</div>
+      <div class="test-item warn"><strong>Predictive bounds</strong> — flagged when predictive &gt; 3x historical (noisy extrapolation)</div>
+    </div>
+
+    <!-- Reversal Thinking -->
+    <div class="test-card">
+      <div class="icon-ring" style="background:rgba(93,202,165,.12);color:var(--accent2)">&#8634;</div>
+      <h3>Reversal thinking</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">If we're wrong, what would prove it?</p>
+      <div class="test-item edge"><strong>What if gross &gt; revenue?</strong> — Should never happen. If it does, discount calc is wrong</div>
+      <div class="test-item edge"><strong>What if all 4 agree?</strong> — Suspicious. Likely means freight/tax/cost are all near-zero</div>
+      <div class="test-item edge"><strong>What if the "best" customer is negative?</strong> — Means our revenue ranking masks a money-loser</div>
+      <div class="test-item edge"><strong>What if predictive CLV = 0?</strong> — Lifespan flooring failed or orders missing</div>
+      <div class="test-item edge"><strong>What if reconciliation shows no drivers?</strong> — Threshold tuning needed; add "broadly aligned" fallback</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:16px">
+    <div class="icon">&#9670;</div>
+    <p><strong>7 automated tests in pytest</strong> covering all edge cases above. Every test maps to a real scenario we found in AdventureWorks data — these aren't hypotheticals.</p>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+var cur=0,total=4;
+var dots=document.getElementById('dots');
+for(var i=0;i<total;i++){var d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.onclick=(function(j){return function(){goTo(j)}})(i);dots.appendChild(d)}
+
+function goTo(n){
+  if(n<0||n>=total)return;
+  var slides=document.querySelectorAll('.slide');
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add(n>cur?'prev':'');
+  setTimeout(function(){slides[cur].classList.remove('prev');cur=n;slides[cur].classList.add('active');updateNav()},10);
+  cur=n;slides[cur].classList.add('active');updateNav();
+}
+function go(d){goTo(cur+d)}
+function updateNav(){
+  document.getElementById('snum').textContent=(cur+1)+' / '+total;
+  var dd=dots.children;for(var i=0;i<total;i++){dd[i].className='dot'+(i===cur?' on':'')}
+}
+
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1)});
+
+// Bar chart mock data
+var barData=[
+  {methods:[[4520,3890,3100,2800,2400,1900,1600,1200],[1840,1650,1420,1180,960,810,620,480],[1210,1080,910,740,580,440,310,180],[3200,2850,2100,1900,1400,1100,800,600]],
+   labels:['C-29825','C-11000','C-29672','C-29734','C-14328','C-18750','C-22091','C-30117']},
+];
+var colors=['var(--coral)','var(--accent)','var(--accent2)','var(--blue)'];
+var methodIdx=1;
+
+function renderBars(){
+  var c=document.getElementById('bars');c.innerHTML='';
+  var vals=barData[0].methods[methodIdx];
+  var mx=Math.max.apply(null,vals);
+  for(var i=0;i<vals.length;i++){
+    var g=document.createElement('div');g.className='bar-group';
+    var b=document.createElement('div');b.className='bar';b.style.height=Math.round(vals[i]/mx*100)+'%';b.style.background=colors[methodIdx];b.style.opacity=1-i*.08;
+    var l=document.createElement('div');l.className='bar-label';l.textContent=barData[0].labels[i];
+    var v=document.createElement('div');v.style.cssText='font-size:11px;color:var(--text);font-weight:600;font-variant-numeric:tabular-nums';v.textContent='$'+vals[i].toLocaleString();
+    g.appendChild(v);g.appendChild(b);g.appendChild(l);c.appendChild(g);
+  }
+}
+function setMethod(idx,el){
+  methodIdx=idx;
+  document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('sel')});
+  el.classList.add('sel');
+  renderBars();
+}
+renderBars();
+</script>
 </body>
 </html>
