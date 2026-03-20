@@ -326,12 +326,15 @@ var dots=document.getElementById('dots');
 for(var i=0;i<total;i++){var d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.onclick=(function(j){return function(){goTo(j)}})(i);dots.appendChild(d)}
 
 function goTo(n){
-  if(n<0||n>=total)return;
+  if(n<0||n>=total||n===cur)return;
   var slides=document.querySelectorAll('.slide');
-  slides[cur].classList.remove('active');
-  slides[cur].classList.add(n>cur?'prev':'');
-  setTimeout(function(){slides[cur].classList.remove('prev');cur=n;slides[cur].classList.add('active');updateNav()},10);
-  cur=n;slides[cur].classList.add('active');updateNav();
+  var old=cur;
+  slides[old].classList.remove('active');
+  if(n>old) slides[old].classList.add('prev');
+  cur=n;
+  slides[cur].classList.add('active');
+  updateNav();
+  setTimeout(function(){slides[old].classList.remove('prev')},400);
 }
 function go(d){goTo(cur+d)}
 function updateNav(){
